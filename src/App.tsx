@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Bot, User, Languages, Sparkles, Loader2, MessageSquare, Plus, Settings, History, Menu, X, Trash2, Mic } from 'lucide-react';
+import { Send, User, Sparkles, Loader2, MessageSquare, Plus, Settings, History, Menu, X, Trash2, Mic } from 'lucide-react';
 import axios from 'axios';
 
 interface Message {
@@ -101,12 +101,7 @@ const App: React.FC = () => {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
-      // Map app language to BCP-47 tags
-      const langMap = {
-        'English': 'en-IN',
-        'Hindi': 'hi-IN',
-        'Marathi': 'mr-IN'
-      };
+      recognition.interimResults = true;
       
       recognition.onresult = (event: any) => {
         let interimTranscript = '';
