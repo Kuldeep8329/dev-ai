@@ -1,0 +1,10 @@
+flask
+flask-cors
+langchain
+langchain-community
+langchain-huggingface
+python-dotenv
+faiss-cpu
+sentence-transformers
+numpy
+jsonlines
