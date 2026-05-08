@@ -93,6 +93,14 @@ const App: React.FC = () => {
   const [isListening, setIsListening] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [input]);
 
   useEffect(() => {
     // Initialize Speech Recognition
@@ -100,7 +108,6 @@ const App: React.FC = () => {
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
-      recognition.interimResults = true;
       recognition.interimResults = true;
       
       recognition.onresult = (event: any) => {
@@ -115,11 +122,35 @@ const App: React.FC = () => {
           }
         }
         
+        // Auto-correct brand names that speech recognition often misses
+        const correctTranscript = (text: string) => {
+          const corrections: { [key: string]: string | RegExp } = {
+            'dev nectar': /dev\s*nectar/gi,
+            'def nectar': /def\s*nectar/gi,
+            'div nectar': /div\s*nectar/gi,
+            'devnectar': /devnectar/gi,
+            'developer nectar': /developer\s*nectar/gi,
+            'dev ai': /dev\s*-?\s*ai/gi,
+            'devai': /devai/gi,
+          };
+
+          let corrected = text;
+          Object.entries(corrections).forEach(([_, pattern]) => {
+            corrected = corrected.replace(pattern, 'devNectar');
+          });
+          
+          // Special case for Dev-Ai (Chatbot name)
+          corrected = corrected.replace(/devNectar\s*ai/gi, 'Dev-Ai');
+          
+          return corrected;
+        };
+
         if (finalTranscript) {
-           setInput(prev => prev ? prev + ' ' + finalTranscript : finalTranscript);
-        } else if (interimTranscript) {
-           // Optionally update input with interim (though it can be jittery)
-           // setInput(interimTranscript);
+           const correctedText = correctTranscript(finalTranscript);
+           setInput(prev => {
+             const cleanPrev = prev.trim();
+             return cleanPrev ? cleanPrev + ' ' + correctedText : correctedText;
+           });
         }
       };
 
@@ -377,6 +408,7 @@ const App: React.FC = () => {
           <div className="input-container">
             <div className="input-box-wrapper">
               <textarea
+                ref={textareaRef}
                 rows={1}
                 placeholder={
                   language === 'English' ? 'Message Dev-Ai...' :
