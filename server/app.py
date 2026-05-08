@@ -9,8 +9,8 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
 
-# Load environment variables at the very beginning
-load_dotenv()
+# Load environment variables at the very beginning and override any existing system env vars
+load_dotenv(override=True)
 
 HF_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 print(f"HF Token found: {'Yes' if HF_TOKEN else 'No'}")
